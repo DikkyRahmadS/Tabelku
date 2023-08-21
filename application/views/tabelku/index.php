@@ -39,7 +39,7 @@
 								</div>
 								<div class="mb-3">
 									<label for="tanggal_pembelian">Tanggal Pembelian</label>
-									<input type="date" class="form-control" id="tanggal_pembelian" name="tanggal_pembelian" max="<?php echo date('Y-m-d'); ?>" placeholder="Nama penjual">
+									<input type="date" class="form-control" id="tanggal_pembelian" name="tanggal_pembelian" value="<?php echo date('Y-m-d'); ?>"  readonly>
 									<?= form_error('tanggal_pembelian', '<div class="invalid-feedback">', '</div>') ?>
 								</div>
 								<div class="mb-3">
