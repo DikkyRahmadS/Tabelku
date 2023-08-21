@@ -27,6 +27,15 @@ class User extends CI_Controller
 			->from("pembelian")
 			->group_by("DATE_FORMAT(tanggal_pembelian, '%Y-%m')")
 			->get()->result();
+		$data['data_pelanggan'] = $this->db
+			->select("DATE_FORMAT(tanggal_pembelian, '%Y-%m') as bulan, 
+              nama_penjual,
+              SUM(CASE WHEN kualitas = 'Besar' THEN bobot ELSE 0 END) as total_bobot_besar,
+              SUM(CASE WHEN kualitas = 'Kecil' THEN bobot ELSE 0 END) as total_bobot_kecil")
+			->from("pembelian")
+			->group_by("DATE_FORMAT(tanggal_pembelian, '%Y-%m'), nama_penjual")
+			->order_by("bulan, nama_penjual")
+			->get()->result();
 			
 			//var_dump($data['data_kualitas']);
 		$this->load->view('layouts/header', $data);

@@ -60,12 +60,12 @@
 								</div>
 								<div class="mb-3">
 									<label for="harga_beli">Harga Beli</label>
-									<input type="number" class="form-control" id="harga_beli" name="harga_beli" placeholder="Harga Beli">
+									<input type="text" pattern="[0-9]+([\.][0-9]+)?" class="form-control" id="harga_beli" name="harga_beli" placeholder="Harga Beli">
 									<?= form_error('harga_beli', '<div class="invalid-feedback">', '</div>') ?>
 								</div>
 								<div class="mb-3">
 									<label for="total_bayar">Total Bayar</label>
-									<input type="number" class="form-control" id="total_bayar" name="total_bayar" placeholder="Nama penjual">
+									<input type="text" pattern="[0-9]+([\.][0-9]+)?" class="form-control" id="total_bayar" name="total_bayar" placeholder="Total Bayar">
 									<?= form_error('total_bayar', '<div class="invalid-feedback">', '</div>') ?>
 								</div>
 							</div>

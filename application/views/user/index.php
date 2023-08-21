@@ -2,22 +2,8 @@
 
 	<div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
 		<div>
-			<!-- <h4 class="mb-3 mb-md-0">Welcome to Dashboard</h4> -->
+
 		</div>
-		<!-- <div class="d-flex align-items-center flex-wrap text-nowrap">
-			<div class="input-group date datepicker wd-200 me-2 mb-2 mb-md-0" id="dashboardDate">
-				<span class="input-group-text input-group-addon bg-transparent border-primary"><i data-feather="calendar" class=" text-primary"></i></span>
-				<input type="text" class="form-control border-primary bg-transparent">
-			</div>
-			<button type="button" class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0">
-				<i class="btn-icon-prepend" data-feather="printer"></i>
-				Print
-			</button>
-			<button type="button" class="btn btn-primary btn-icon-text mb-2 mb-md-0">
-				<i class="btn-icon-prepend" data-feather="download-cloud"></i>
-				Download Report
-			</button>
-		</div> -->
 	</div>
 	<?php if ($this->session->userdata('role_id') == 1 || $this->session->userdata('role_id') == 3) : ?>
 		<div class="row">
@@ -56,6 +42,23 @@
 									</style>
 									<div id="chart-container2">
 										<div id="chart2"></div>
+									</div>
+								</div>
+							</div>
+							<div class="card-body" style="overflow: auto;">
+								<div>
+									<div class="d-flex justify-content-between align-items-baseline mb-2">
+										<h6 class="card-title mb-0">Laporan Data Pelanggan</h6>
+										<!-- Dropdown menu code... -->
+									</div>
+									<p class="text-muted">Laporan Data Pelanggan.</p>
+									<style>
+										#chart3 {
+											width: 80%;
+										}
+									</style>
+									<div id="chart-container2">
+										<div id="chart3"></div>
 									</div>
 								</div>
 							</div>
@@ -186,6 +189,89 @@
 	var chart2 = new ApexCharts(document.querySelector("#chart2"), opsiKualitas);
 	chart2.render();
 
-	// console.log(dataSeriesKualitas)
+	var data_pelanggan = <?= json_encode($data_pelanggan) ?>;
+
+	// Ubah format tanggal dari "YYYY-MM" menjadi "MMMM YYYY"
+	var formattedDataPel = data_pelanggan.map(item => {
+		var dateParts = item.bulan.split('-');
+		var month = parseInt(dateParts[1], 10);
+		var monthName = new Date(Date.UTC(2000, month - 1, 1)).toLocaleString('id-ID', {
+			month: 'long'
+		});
+		return {
+			bulan: monthName + ' ' + dateParts[0],
+			nama_penjual: item.nama_penjual,
+			total_bobot_besar: item.total_bobot_besar,
+			total_bobot_kecil: item.total_bobot_kecil
+		};
+	});
+
+	var penjuals = Array.from(new Set(formattedDataPel.map(item => item.nama_penjual))); // Ambil daftar unik nama penjual
+	var uniqueMonths = Array.from(new Set(formattedDataPel.map(item => item.bulan))); // Ambil daftar unik bulan
+
+	var seriesBesar = penjuals.map(penjual => {
+		var data = [];
+
+		uniqueMonths.forEach(bulan => {
+			var dataPenjual = formattedDataPel.find(item => item.nama_penjual === penjual && item.bulan === bulan);
+			if (dataPenjual) {
+				data.push(dataPenjual.total_bobot_besar);
+			} else {
+				data.push(0);
+			}
+		});
+
+		return {
+			name: penjual + ' (Besar)',
+			data: data
+		};
+	});
+
+	var seriesKecil = penjuals.map(penjual => {
+		var data = [];
+
+		uniqueMonths.forEach(bulan => {
+			var dataPenjual = formattedDataPel.find(item => item.nama_penjual === penjual && item.bulan === bulan);
+			if (dataPenjual) {
+				data.push(dataPenjual.total_bobot_kecil);
+			} else {
+				data.push(0);
+			}
+		});
+
+		return {
+			name: penjual + ' (Kecil)',
+			data: data
+		};
+	});
+
+	var optionsPel = {
+		chart: {
+			type: 'bar'
+		},
+		series: [...seriesBesar, ...seriesKecil],
+		xaxis: {
+			categories: uniqueMonths
+		},
+		plotOptions: {
+			bar: {
+				horizontal: false,
+				barWidth: '30%'
+			}
+		},
+		tooltip: {
+			y: {
+				formatter: function(val) {
+					return val.toFixed(2);
+				}
+			}
+		}
+	};
+
+	var chart3 = new ApexCharts(document.querySelector("#chart3"), optionsPel);
+	chart3.render();
+
+
+	//console.log(data_pelanggan)
 	// console.log(formattedDataKualitas)
 </script>
